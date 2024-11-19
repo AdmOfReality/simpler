@@ -1,4 +1,5 @@
 require 'erb'
+require 'json'
 
 module Simpler
   class View
@@ -10,9 +11,12 @@ module Simpler
     end
 
     def render(binding)
-      template = File.read(template_path)
-
-      ERB.new(template).result(binding)
+      if controller.response['content-type'] == 'application/json'
+        template
+      else
+        template = File.read(template_path)
+        ERB.new(template).result(binding)
+      end
     end
 
     private

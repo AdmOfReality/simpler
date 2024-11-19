@@ -22,6 +22,14 @@ module Simpler
       @response.finish # => [200, {}, []]
     end
 
+    def status(code)
+      @response.status = code
+    end
+
+    def headers
+     @response.headers
+    end
+
     private
 
     def extract_name

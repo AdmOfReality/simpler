@@ -22,6 +22,10 @@ module Simpler
       @response.finish # => [200, {}, []]
     end
 
+    def params
+      @request.env['simpler.params'].merge(@request.params)
+    end
+
     def status(code)
       @response.status = code
     end

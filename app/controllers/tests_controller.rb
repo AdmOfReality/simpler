@@ -10,6 +10,10 @@ class TestsController < Simpler::Controller
     headers['custom-header'] = 'It is HEADERS'
   end
 
+  def show
+    @id = params[:id]
+  end
+
   def create
 
   end

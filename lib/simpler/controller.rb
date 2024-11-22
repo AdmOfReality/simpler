@@ -22,6 +22,18 @@ module Simpler
       @response.finish # => [200, {}, []]
     end
 
+    def params
+      @request.env['simpler.params'].merge(@request.params)
+    end
+
+    def status(code)
+      @response.status = code
+    end
+
+    def headers
+     @response.headers
+    end
+
     private
 
     def extract_name
@@ -33,9 +45,11 @@ module Simpler
     end
 
     def write_response
-      body = render_body
-
-      @response.write(body)
+      unless @response.body.any?
+        body = render_body
+        @response.write(body)
+        @response['сontent-дength'] = body.bytesize.to_s
+      end
     end
 
     def render_body
@@ -43,7 +57,26 @@ module Simpler
     end
 
     def render(template)
-      @request.env['simpler.template'] = template
+      if template.is_a?(Hash)
+        format = template.keys.first
+        content = template[format]
+
+        case format
+        when :plain
+          @response['content-type'] = 'text/plain'
+          @response.body = [content]
+        when :html
+          @response['content-type'] = 'text/html'
+          @response.body = [content]
+        when :json
+          @response['content-type'] = 'application/json'
+          @response.body = [content.to_json]
+        else
+          raise "Unsupported format"
+        end
+      else
+        @request.env['simpler.template'] = template
+      end
     end
   end
 end
